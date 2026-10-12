@@ -58,6 +58,9 @@ button.secondary { background: #eaf0fa; color: #174382; }
 .message.error { color: #b42318; }
 
 .table-wrap { overflow-x: auto; }
+.field-help { color: #526078; font-size: 0.9rem; margin: -8px 0 0; }
+.ticket-image { display: block; width: 100px; height: 75px; object-fit: contain; border-radius: 6px; }
+button:disabled { opacity: 0.6; cursor: wait; }
 table { border-collapse: collapse; width: 100%; }
 th, td { border-bottom: 1px solid #e1e7f0; padding: 10px; text-align: left; vertical-align: top; }
 th { background: #f5f8fc; white-space: nowrap; }

@@ -40,6 +40,7 @@ function renderTickets(tickets) {
     addCell(row, `${ticket.location}／${ticket.equipment}`);
     addCell(row, ticket.contact);
     addCell(row, ticket.description);
+    addImageCell(row, ticket);
     addCell(row, ticket.created_at);
 
     const statusCell = document.createElement("td");

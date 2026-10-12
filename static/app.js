@@ -4,6 +4,24 @@ const table = document.querySelector("#ticket-table");
 const tableBody = table.querySelector("tbody");
 const emptyState = document.querySelector("#empty-state");
 const refreshButton = document.querySelector("#refresh-button");
+const imageInput = document.querySelector("#image-input");
+const submitButton = form.querySelector('button[type="submit"]');
+
+function validateImage() {
+  const file = imageInput.files[0];
+  let error = "";
+  if (file && !/\.(jpe?g|png|gif|webp)$/i.test(file.name)) {
+    error = "圖片格式不支援，請選擇 JPG、PNG、GIF 或 WebP。";
+  } else if (file && file.size > 5 * 1024 * 1024) {
+    error = "圖片不得超過 5 MB，請縮小圖片後再送出。";
+  }
+  imageInput.setCustomValidity(error);
+  return error;
+}
+
+imageInput.addEventListener("change", () => {
+  showMessage(validateImage(), !!imageInput.validationMessage);
+});
 
 function showMessage(text, isError = false) {
   message.textContent = text;
@@ -30,6 +48,7 @@ function renderTickets(tickets) {
     addCell(row, ticket.contact);
     addCell(row, ticket.status);
     addCell(row, ticket.description);
+    addImageCell(row, ticket);
     addCell(row, ticket.created_at);
     tableBody.appendChild(row);
   }
@@ -47,16 +66,20 @@ async function loadTickets() {
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
+  const imageError = validateImage();
+  if (imageError) {
+    showMessage(imageError, true);
+    return;
+  }
   showMessage("正在建立報修單…");
+  submitButton.disabled = true;
 
   const formData = new FormData(form);
-  const payload = Object.fromEntries(formData.entries());
 
   try {
     const response = await fetch("/api/tickets", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+      body: formData,
     });
     const result = await response.json();
 
@@ -64,9 +87,12 @@ form.addEventListener("submit", async (event) => {
 
     showMessage(result.message);
     form.reset();
+    imageInput.setCustomValidity("");
     await loadTickets();
   } catch (error) {
     showMessage(error.message, true);
+  } finally {
+    submitButton.disabled = false;
   }
 });
 
